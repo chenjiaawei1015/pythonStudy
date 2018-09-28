@@ -140,3 +140,13 @@
 - os
 - sys
 
+### day20
+
+- 序列化
+  - json
+  - pickle
+  - shelve
+- 模块导入
+  - import
+  - from ... import ...
+
