@@ -132,3 +132,11 @@
 - 正则表达式
 - re模块
 
+### day19
+
+- collections
+- 时间模块
+- random
+- os
+- sys
+
