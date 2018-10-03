@@ -191,3 +191,18 @@
   - 私有属性
   - 私有方法
 
+### day26
+
+- 私有方法不能被子类继承
+- property
+  - setter
+  - getter
+  - deleter
+- classmethod 类方法
+- staticmethod 静态方法
+- 反射
+  - setattr
+  - getattr
+  - hasattr
+  - delattr
+
