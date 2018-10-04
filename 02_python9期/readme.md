@@ -206,3 +206,15 @@
   - hasattr
   - delattr
 
+### day27
+
+- 包使用的注意点
+- isinstance
+- issubclass
+- 反射
+- 类的内置方法
+  - \_\_str\_\_
+  - \_\_repr\_\_
+  - \_\_del\_\_
+  - \_\_call\_\_
+
