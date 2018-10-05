@@ -230,5 +230,8 @@
   - sha系列
   - md5
 
+### day29
 
+- configparser 模块
+- logging 模块
 
