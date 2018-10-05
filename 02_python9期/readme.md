@@ -235,3 +235,17 @@
 - configparser 模块
 - logging 模块
 
+### day30
+
+- 计算机网络
+  - 计算机通信的历史
+  - ip地址和ip协议
+  - mac地址
+  - arp协议
+  - 子网掩码
+  - tcp和udp通信过程
+  - osi七层模型
+- socket编程
+  - 基于tcp的socket
+  - 基于udp的socket
+
