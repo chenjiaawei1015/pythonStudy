@@ -258,3 +258,10 @@
   - 黏包的两种解决方案
 - struct模块
 
+### day33
+
+- hmac 模块
+- 验证客户端的合法性
+- socketserver
+- socketserver源码分析
+
