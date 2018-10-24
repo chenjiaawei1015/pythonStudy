@@ -321,3 +321,10 @@
 - Gevent模块
 - 五种IO模型
 
+### day41
+
+- 多路复用IO模型
+- select模块
+- IO模型的比较
+- selectors模块
+
