@@ -453,3 +453,11 @@
 - 库,表的创建
 - 数据的增删改查
 
+### day60
+
+- Django的安装
+
+- Django工程结构
+- Django配置
+- 基础api(HttpResponse, render, redirect)
+
