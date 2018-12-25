@@ -461,3 +461,12 @@
 - Django配置
 - 基础api(HttpResponse, render, redirect)
 
+### day61
+
+- shortcuts三大基础api
+  - HttpResponse
+  - render
+  - redirect
+- GET与POST请求
+- Django操作sqlite3数据库
+
