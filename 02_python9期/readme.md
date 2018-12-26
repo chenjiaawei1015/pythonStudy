@@ -470,3 +470,9 @@
 - GET与POST请求
 - Django操作sqlite3数据库
 
+### day62
+
+- Django连接MySQL数据库
+- 创建表
+- 对数据库的增删改查操作
+
