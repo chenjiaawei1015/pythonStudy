@@ -498,3 +498,15 @@
 - 组件
 - 静态文件
 
+### day66
+
+- 路由
+- url配置
+- url正则匹配
+- 分组命名namespace
+- 视图
+- CBV与FBV及其装饰器
+- Request
+- Response
+- JsonResponse
+
