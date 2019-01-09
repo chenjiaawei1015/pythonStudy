@@ -511,3 +511,10 @@
 - JsonResponse
 - 学生管理系统优化版(路由+正则匹配+url反向解析+CBV)
 
+### day67
+
+- 请求的处理过程
+- 反向解析URL
+- name模式
+- namespace模式
+
