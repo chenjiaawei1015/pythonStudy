@@ -518,3 +518,11 @@
 - name模式
 - namespace模式
 
+### day68
+
+- ORM介绍
+- python datetime模块
+- ORM字段和参数
+- 元信息
+- ORM相关操作(二)
+
