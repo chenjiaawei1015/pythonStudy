@@ -821,3 +821,305 @@ class HomeView(View):
         return redirect("/index/")
 ```
 
+## 分页
+
+当数据库中数据有很多，我们通常会在前端页面做分页展示。分页的数据可以在前端页面实现，也可以在后端实现分页。后端实现分页的原理就是每次只请求一页数据
+
+### 批量添加数据
+
+```python
+from django.test import TestCase
+import django
+import os
+
+# Create your tests here.
+
+if __name__ == '__main__':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'demo1.settings')
+    django.setup()
+
+    from app01 import models
+
+    user_list = []
+    for item in range(1, 285):
+        user = models.User(name=f'user{item}', password=f'password{item}')
+        user_list.append(user)
+
+    # 批量添加,只执行一次SQL操作
+    models.User.objects.bulk_create(user_list)
+```
+
+### 自定义分页实现
+
+```python
+class User(View):
+    def get(self, request):
+        user_list = models.User.objects.all()
+
+        # 每页显示的条目数目
+        data_page_show = 10
+        # 最多显示的页数
+        nav_page_show = 11
+
+        # 总数据数目
+        data_count = user_list.count()
+        total_page_tuple = divmod(data_count, data_page_show)
+        # 总页数
+        total_page = total_page_tuple[0]
+        if total_page_tuple[1] > 0:
+            total_page += 1
+
+        # 当前页
+        current_page_index = int(request.GET.get('page', '1'))
+
+        page_start = current_page_index - nav_page_show // 2
+        page_end = current_page_index + nav_page_show // 2
+
+        if page_start < 1:
+            page_start = 1
+            page_end = page_start + min(nav_page_show, total_page)
+
+        elif page_end > total_page:
+            page_end = total_page
+            page_start = page_end - min(nav_page_show, total_page)
+
+        current_page_data_start = (current_page_index - 1) * data_page_show
+        current_page_data_end = current_page_index * data_page_show
+        if current_page_data_end >= data_count:
+            current_page_data_end = data_count - 1
+        user_list = user_list[current_page_data_start:current_page_data_end]
+
+        # 生成 html 的 li 列表
+        user_url = reverse('user')
+
+        page_li_list = []
+        if current_page_index - 1 < 1:
+            # 前一页不可点击
+            page_li_list.append(f'''
+                <li class="disabled">
+                    <a aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                ''')
+        else:
+            prev_user_url = f'{user_url}?page={current_page_index - 1}'
+            page_li_list.append(f'''
+                <li>
+                    <a href="{prev_user_url}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                ''')
+
+        # 添加每个页面
+        for item_page_index in range(page_start, page_end + 1):
+            page_link_url = f'{user_url}?page={item_page_index}'
+            if item_page_index == current_page_index:
+                page_li_list.append(f'''
+                    <li class="active">
+                        <a href="{page_link_url}">{item_page_index}</a>
+                    </li>
+                    ''')
+            else:
+                page_li_list.append(f'''
+                    <li >
+                        <a href="{page_link_url}">{item_page_index}</a>
+                    </li>
+                    ''')
+
+        # 添加下一页
+        if current_page_index + 1 > total_page:
+            page_li_list.append(f'''
+                <li class="disabled">
+                    <a aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                ''')
+        else:
+            next_user_url = f'{user_url}?page={current_page_index + 1}'
+            page_li_list.append(f'''
+                <li>
+                    <a href="{next_user_url}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                ''')
+
+        page_li_code = ''.join(page_li_list)
+
+        return render(request, 'user_page.html',
+                      {'user_list': user_list, 'page_li_code': page_li_code}
+                      )
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <td>id</td>
+            <td>姓名</td>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item_user in user_list %}
+            <tr>
+                <td>{{ item_user.id }}</td>
+                <td>{{ item_user.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {{ page_li_code|safe }}
+        </ul>
+    </nav>
+
+</div>
+
+<script src="/static/jquery-3.2.1.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+```
+
+### Django中内置的分页
+
+```python
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+
+
+class User(View):
+    def get(self, request):
+        user_list = models.User.objects.all()
+
+        # 当前页
+        current_page_index = int(request.GET.get('page', '1'))
+
+        # 第一个参数: 所有的数据
+        # 第二个参数: 每页显示的数据
+        user_paginator = Paginator(user_list, 10)
+
+        # 属性
+        # per_page     每页显示条目数量
+        # count        数据总个数
+        # num_pages    总页数
+        # page_range   总页数的索引范围，如: (1,10),(1,200)
+        # page         page对象
+
+        try:
+            result = user_paginator.page(current_page_index)
+
+            # 属性
+            # has_next              是否有下一页
+            # next_page_number      下一页页码
+            # has_previous          是否有上一页
+            # previous_page_number  上一页页码
+            # object_list           分页之后的数据列表
+            # number                当前页
+            # paginator             paginator对象
+
+        except PageNotAnInteger:
+            # 传递的不是一个数字,默认显示第一页
+            result = user_paginator.page(1)
+        except EmptyPage:
+            result = user_paginator.page(user_paginator.num_pages)
+
+        return render(request, 'user_page.html', {'result': result})
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <td>id</td>
+            <td>姓名</td>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item_user in result %}
+            <tr>
+                <td>{{ item_user.id }}</td>
+                <td>{{ item_user.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {# 判断是否有前一页 #}
+            {% if result.has_previous %}
+                <li>
+                    <a href="?page={{ result.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a class="disabled" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {# 当前页码的显示 #}
+            <li><a href="#">{{ result.number }}</a></li>
+
+            {# 判断是否有下一页 #}
+            {% if result.has_next %}
+                <li>
+                    <a href="?page={{ result.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a class="disabled" aria-label="Next">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+</div>
+
+<script src="/static/jquery-3.2.1.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+```
+
