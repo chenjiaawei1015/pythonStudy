@@ -543,3 +543,10 @@
   - Session
   - 分页
 
+### day70
+
+- AJAX使用
+- AJAX优缺点
+- csrf_token设置
+- Django内置的serializers
+
