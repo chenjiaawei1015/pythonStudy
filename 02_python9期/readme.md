@@ -550,3 +550,17 @@
 - csrf_token设置
 - Django内置的serializers
 
+### day72
+
+- Django中间件
+- 默认的中间件
+- 自定义中间件
+- 中间件的5个方法
+  - process_request
+  - process_response
+  - process_view
+  - process_exception
+  - process_template_response
+- 中间件的执行流程
+- Django请求流程
+
