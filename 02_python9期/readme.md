@@ -564,3 +564,10 @@
 - 中间件的执行流程
 - Django请求流程
 
+### day74
+
+- Importlib 模块导入
+- session流程源码分析
+- Django auth用户认证模块
+- auth_user 表的字段扩展
+
