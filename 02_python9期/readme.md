@@ -571,3 +571,7 @@
 - Django auth用户认证模块
 - auth_user 表的字段扩展
 
+- 项目01 博客管理系统
+  - 验证码图片的生成 pillow模块
+  - 模块文件的全局 request
+
